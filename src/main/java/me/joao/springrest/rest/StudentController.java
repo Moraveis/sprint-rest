@@ -42,12 +42,22 @@ public class StudentController {
 
     @ExceptionHandler
     public ResponseEntity<StudentErrorResponse> handlingException(StudentNotFoundException studentNotFoundException) {
-        StudentErrorResponse response = new StudentErrorResponse();
-        response.setStatus(HttpStatus.NOT_FOUND.value());
-        response.setMessage(studentNotFoundException.getMessage());
-        response.setTimestamp(System.currentTimeMillis());
-
+        StudentErrorResponse response = buildStudentErrorResponse(HttpStatus.NOT_FOUND, studentNotFoundException.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<StudentErrorResponse> handlingException(Exception exception) {
+        StudentErrorResponse response = buildStudentErrorResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    private static StudentErrorResponse buildStudentErrorResponse(HttpStatus notFound, String studentNotFoundException) {
+        StudentErrorResponse response = new StudentErrorResponse();
+        response.setStatus(notFound.value());
+        response.setMessage(studentNotFoundException);
+        response.setTimestamp(System.currentTimeMillis());
+        return response;
     }
 
     private List<Student> createStudentsStubs() {
